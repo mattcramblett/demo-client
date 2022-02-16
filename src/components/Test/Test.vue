@@ -2,7 +2,10 @@
   <div class="test">
     <div class="header">
       <h1>Test CRUD</h1>
-      <button @click="onClickNew">New</button>
+      <div class="header-buttons">
+        <button @click="onClickNew">New</button>
+        <button @click="onClickRefresh">Refresh</button>
+      </div>
     </div>
 
     <div class="content">
@@ -58,6 +61,9 @@ export default {
         return "None";
       }
       return FormatUtil.formatDateTime(datetime);
+    },
+    onClickRefresh() {
+      this.$store.dispatch("app/REFRESH");
     },
     onClickNew() {
       this.editingObject = null;
@@ -115,6 +121,15 @@ export default {
     flex-direction: column;
     align-items: start;
     margin-bottom: 20px;
+
+    .header-buttons {
+      display: flex;
+      align-items: center;
+
+      button {
+        margin-right: 10px;
+      }
+    }
   }
 
   .content {
