@@ -1,0 +1,6 @@
+export default {
+  RESET: "RESET",
+  REFRESH: "REFRESH",
+  REGISTER_USER: "REGISTER_USER",
+  LOGIN: "LOGIN",
+};
