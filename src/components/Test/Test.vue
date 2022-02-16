@@ -19,15 +19,19 @@
           <td>{{ object.active }}</td>
           <td>{{ formatTime(object.time) }}</td>
           <td>
+            <a href="#" @click="onEdit(object)" class="edit">Edit</a>
+          </td>
+          <td>
             <a href="#" @click="onDelete(object.id)" class="delete">Delete</a>
           </td>
         </tr>
       </table>
 
       <new-test-object
-        v-if="showNewDataForm"
+        v-if="showDataForm"
+        :obj="editingObject"
         @cancel="onCloseForm"
-        @save="onSaveNewObject"
+        @save="onSaveObject"
       ></new-test-object>
     </div>
   </div>
@@ -44,7 +48,8 @@ export default {
   data: () => {
     return {
       objects: [],
-      showNewDataForm: false,
+      showDataForm: false,
+      editingObject: null,
     };
   },
   methods: {
@@ -55,16 +60,33 @@ export default {
       return FormatUtil.formatDateTime(datetime);
     },
     onClickNew() {
-      this.showNewDataForm = true;
+      this.editingObject = null;
+      this.showDataForm = true;
     },
     onCloseForm() {
-      this.showNewDataForm = false;
+      this.showDataForm = false;
     },
-    async onSaveNewObject(obj) {
-      const { data } = await ApiService.createTestObject(obj);
-      console.log(JSON.stringify(data, null, 2));
-      this.objects.push(data);
+    onEdit(obj) {
+      this.editingObject = obj;
+      this.showDataForm = true;
+    },
+    async onSaveObject(obj) {
+      if (obj.id) {
+        await this.updateObject(obj);
+      } else {
+        await this.createObj(obj);
+      }
       this.onCloseForm();
+    },
+    async createObj(obj) {
+      const { data } = await ApiService.createTestObject(obj);
+      this.objects.push(data);
+    },
+    async updateObject(obj) {
+      const { data } = await ApiService.updateTestObject(obj);
+      const oldObj = this.objects.find((o) => o.id === data.id);
+      const index = this.objects.indexOf(oldObj);
+      this.objects[index] = data;
     },
     async loadObjects() {
       const { data } = await ApiService.getTestObjects();
@@ -73,6 +95,7 @@ export default {
     async onDelete(id) {
       await ApiService.deleteTestObject(id);
       this.objects = this.objects.filter((o) => o.id !== id);
+      this.onCloseForm();
     },
   },
   async mounted() {
@@ -83,6 +106,7 @@ export default {
 
 <style lang="scss" scoped>
 .test {
+  margin: 20px;
   display: flex;
   flex-direction: column;
 
@@ -111,6 +135,11 @@ export default {
 
       .delete {
         color: darkred;
+        text-decoration: none;
+      }
+
+      .edit {
+        color: dodgerblue;
         text-decoration: none;
       }
     }

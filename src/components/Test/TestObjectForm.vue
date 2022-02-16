@@ -16,16 +16,32 @@ import { DateTime } from "luxon";
 
 export default {
   name: "NewTestObject",
+  props: {
+    obj: Object,
+  },
   data: () => {
     return {
+      id: null,
       name: null,
       active: false,
       time: null,
     };
   },
+  mounted() {
+    this.setObj(this.obj);
+  },
   methods: {
+    setObj(obj) {
+      if (obj) {
+        this.id = obj.id;
+        this.name = obj.name;
+        this.active = obj.active;
+        this.time = DateTime.fromISO(obj.time).toFormat("yyyy-MM-dd'T'HH:mm");
+      }
+    },
     onSave() {
       this.$emit("save", {
+        id: this.id,
         name: this.name,
         active: this.active,
         time: DateTime.fromISO(this.time),
@@ -33,6 +49,11 @@ export default {
     },
     onCancel() {
       this.$emit("cancel");
+    },
+  },
+  watch: {
+    obj(newVal) {
+      this.setObj(newVal);
     },
   },
 };
@@ -44,7 +65,10 @@ export default {
   flex-direction: column;
   text-align: left;
   align-items: start;
-  margin: 20px 0;
+  margin: 20px 0 0 20px;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+  border: 1px solid lightgray;
 
   .field-label {
     font-weight: bold;
