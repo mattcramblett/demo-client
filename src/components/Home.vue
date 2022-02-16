@@ -6,9 +6,7 @@
 </template>
 
 <script>
-import { httpClient } from "@/api";
 import { DateTime } from "luxon";
-import get from "lodash-es/get";
 import { formatDateTime } from "@/utils/FormatUtil";
 
 export default {
@@ -20,16 +18,11 @@ export default {
     };
   },
   async mounted() {
-    const { data } = await httpClient.post("hello-world", {
-      name: "matt",
-      time: DateTime.now(),
-    });
-    this.name = get(data, "name", "Unknown");
-    this.time = get(data, "time", "(unavailable)");
+    this.time = DateTime.now();
   },
   computed: {
     heading() {
-      return `Welcome to my Demo Application, ${this.name}.`;
+      return "Welcome to my Demo Application";
     },
     subheading() {
       return `It is ${this.timeFormatted}`;
